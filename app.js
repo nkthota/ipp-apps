@@ -8,7 +8,9 @@ const port = process.env.PORT || 3001;
 
 // Middleware to parse JSON bodies
 app.use(express.json());
-app.use(cors())
+app.use(cors({
+  origin: true
+}))
 
 // Endpoint to fetch product metadata
 app.get('/product-metadata/:productId', cors(), async (req, res) => {
