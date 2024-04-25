@@ -4,13 +4,20 @@ require('dotenv').config();
 const cors = require('cors'); // Import the cors package
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 // Middleware to parse JSON bodies
 app.use(express.json());
 
 // Use the cors middleware
-app.use(cors());
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
 
 // Endpoint to fetch product metadata
 app.get('/product-metadata/:productId', async (req, res) => {
