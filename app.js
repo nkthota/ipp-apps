@@ -8,21 +8,11 @@ const port = process.env.PORT || 3001;
 
 // Middleware to parse JSON bodies
 app.use(express.json());
-
-// Use the cors middleware
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
-});
+app.use(cors())
 
 // Endpoint to fetch product metadata
-app.get('/product-metadata/:productId', async (req, res) => {
+app.get('/product-metadata/:productId', cors(), async (req, res) => {
   const { productId } = req.params;
-
   try {
     const response = await axios.get(`https://archanapopup.myshopify.com/admin/api/2021-10/products/${productId}/metafields.json`, {
       headers: {
