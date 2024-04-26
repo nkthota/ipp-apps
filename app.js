@@ -1,7 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 require('dotenv').config();
-const cors = require('cors'); // Import the cors package
+const cors = require('cors');
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -11,6 +11,22 @@ app.use(express.json());
 app.use(cors({
   origin: true
 }))
+
+async function getMetaFieldId(productId) {
+  try {
+    const response = await axios.get(`https://archanapopup.myshopify.com/admin/api/2021-10/products/${productId}/metafields.json`, {
+      headers: {
+        'X-Shopify-Access-Token': 'a8d0702d1a40bcff3405b9ba4c3ef42a',
+      },
+    });
+    var jp = require('jsonpath');  
+    const jsonPathValue = jp.query(response.data, '$.metafields[?(@.key=="picks")].id').value;
+    return jsonPathValue
+
+  } catch (error) {
+    throw new Error('Failed to fetch product data');
+  }
+}
 
 // Endpoint to fetch product metadata
 app.get('/product-metadata/:productId', cors(), async (req, res) => {
@@ -22,7 +38,7 @@ app.get('/product-metadata/:productId', cors(), async (req, res) => {
       },
     });
 
-    const metadata = response.data.metafields;
+    const metadata = response.data;
     res.json(metadata);
   } catch (error) {
     console.error('Error fetching product metadata:', error.response ? error.response.data : error.message);
@@ -30,20 +46,20 @@ app.get('/product-metadata/:productId', cors(), async (req, res) => {
   }
 });
 
-app.put('/update-product-metafield/:productId/:productMetaFieldId', async (req, res) => {
+app.put('/update-product-metafield/:productId', async (req, res) => {
   try {
     const productId = req.params.productId;
-    const productMetaFieldId = req.params.productMetaFieldId;
     const metafieldData = {
       metafield: {
-        id: `${productMetaFieldId}`,
         value: '["Archana"]',
-        type: 'list.single_line_text_field'
+        type: 'list.single_line_text_field',
+        namespace: 'custom',
+        key: 'picks'
       }
     };
 
     // Make PUT request to Shopify's API to update the metafield
-    const response = await axios.put(`https://archanapopup.myshopify.com/admin/api/2021-10/products/${productId}/metafields/${productMetaFieldId}.json`, metafieldData, {
+    const response = await axios.post(`https://archanapopup.myshopify.com/admin/api/2021-10/products/${productId}/metafields.json`, metafieldData, {
       headers: {
         'X-Shopify-Access-Token': 'a8d0702d1a40bcff3405b9ba4c3ef42a',
         'Content-Type': 'application/json'
