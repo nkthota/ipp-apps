@@ -30,19 +30,20 @@ app.get('/product-metadata/:productId', cors(), async (req, res) => {
   }
 });
 
-app.put('/update-product-metafield/:productId', async (req, res) => {
+app.put('/update-product-metafield/:productId/:productMetaFieldId', async (req, res) => {
   try {
     const productId = req.params.productId;
+    const productMetaFieldId = req.params.productMetaFieldId;
     const metafieldData = {
       metafield: {
-        id: '30168120525038',
+        id: `${productMetaFieldId}`,
         value: '["Archana"]',
         type: 'list.single_line_text_field'
       }
     };
 
     // Make PUT request to Shopify's API to update the metafield
-    const response = await axios.put(`https://archanapopup.myshopify.com/admin/api/2021-10/products/${productId}/metafields/30168120525038.json`, metafieldData, {
+    const response = await axios.put(`https://archanapopup.myshopify.com/admin/api/2021-10/products/${productId}/metafields/${productMetaFieldId}.json`, metafieldData, {
       headers: {
         'X-Shopify-Access-Token': 'a8d0702d1a40bcff3405b9ba4c3ef42a',
         'Content-Type': 'application/json'
