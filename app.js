@@ -28,6 +28,31 @@ async function getMetaFieldId(productId) {
   }
 }
 
+
+async function updateProductStatusToDraft(productId) {
+  const url = `https://archanapopup.myshopify.com/admin/api/2023-01/products/${productId}.json`;
+
+  const headers = {
+    'Content-Type': 'application/json',
+    'X-Shopify-Access-Token': 'a8d0702d1a40bcff3405b9ba4c3ef42a'
+  };
+
+  const data = {
+    product: {
+      id: productId,
+      status: 'draft'
+    }
+  };
+
+  try {
+    const response = await axios.put(url, data, { headers });
+    console.log('Product status updated successfully:', response.data);
+  } catch (error) {
+    console.error('Error updating product status:', error.response.data);
+  }
+}
+
+
 // Endpoint to fetch product metadata
 app.get('/product-metadata/:productId', cors(), async (req, res) => {
   const { productId } = req.params;
