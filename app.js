@@ -29,7 +29,10 @@ async function getMetaFieldId(productId) {
 }
 
 
-async function updateProductStatusToDraft(productId) {
+// PUT endpoint to update product status to 'draft'
+app.put('/products/:productId/draft', async (req, res) => {
+  const productId = req.params.productId;
+  
   const url = `https://archanapopup.myshopify.com/admin/api/2023-01/products/${productId}.json`;
 
   const headers = {
@@ -46,11 +49,19 @@ async function updateProductStatusToDraft(productId) {
 
   try {
     const response = await axios.put(url, data, { headers });
-    console.log('Product status updated successfully:', response.data);
+    res.json({
+      message: 'Product status updated to draft',
+      product: response.data.product
+    });
   } catch (error) {
-    console.error('Error updating product status:', error.response.data);
+    console.error('Error updating product status:', error.response ? error.response.data : error.message);
+    res.status(500).json({
+      error: 'Failed to update product status',
+      details: error.response ? error.response.data : error.message
+    });
   }
-}
+});
+
 
 
 // Endpoint to fetch product metadata
