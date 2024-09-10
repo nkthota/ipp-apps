@@ -28,6 +28,60 @@ async function getMetaFieldId(productId) {
   }
 }
 
+// PUT endpoint to remove a tag from a product
+app.put('/products/:productId/remove-tag', async (req, res) => {
+  const productId = req.params.productId;
+  const tagToRemove = req.body.tag; // The tag to be removed is passed in the request body
+
+  if (!tagToRemove) {
+    return res.status(400).json({ error: 'Tag to remove is required.' });
+  }
+
+  const url = `https://archanapopup.myshopify.com/admin/api/2023-01/products/${productId}.json`;
+
+  const headers = {
+    'Content-Type': 'application/json',
+    'X-Shopify-Access-Token': 'a8d0702d1a40bcff3405b9ba4c3ef42a'
+  };
+
+  try {
+    // First, retrieve the current product data to get the existing tags
+    const productResponse = await axios.get(url, { headers });
+    const product = productResponse.data.product;
+
+    // Get the existing tags
+    const existingTags = product.tags.split(', ').filter(tag => tag);
+
+    // Check if the tag exists
+    if (!existingTags.includes(tagToRemove)) {
+      return res.status(404).json({ message: 'Tag not found on product.' });
+    }
+
+    // Remove the tag
+    const updatedTags = existingTags.filter(tag => tag !== tagToRemove).join(', ');
+
+    // Update the product with the new tags
+    const updateData = {
+      product: {
+        id: productId,
+        tags: updatedTags
+      }
+    };
+
+    const updateResponse = await axios.put(url, updateData, { headers });
+
+    res.json({
+      message: `Tag "${tagToRemove}" removed successfully.`,
+      product: updateResponse.data.product
+    });
+  } catch (error) {
+    console.error('Error updating product tags:', error.response ? error.response.data : error.message);
+    res.status(500).json({
+      error: 'Failed to update product tags',
+      details: error.response ? error.response.data : error.message
+    });
+  }
+});
 
 // PUT endpoint to update product status to 'draft'
 app.put('/products/:productId/draft', async (req, res) => {
