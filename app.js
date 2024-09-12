@@ -120,7 +120,7 @@ app.put('/products/:id/tag', async (req, res) => {
     };
 
     // Send the PUT request to update the product with new tags
-    const updateResponse = await axios.put(productUrl, updatedProduct, {
+    const updateResponse = await axios.put(url, updatedProduct, {
       headers: {
       'Content-Type': 'application/json',
       'X-Shopify-Access-Token': 'a8d0702d1a40bcff3405b9ba4c3ef42a'
