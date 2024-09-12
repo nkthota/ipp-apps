@@ -95,13 +95,15 @@ app.put('/products/:id/tag', async (req, res) => {
   }
 
   try {
-    
-    const url = `https://archanapopup.myshopify.com/admin/api/2023-01/products/${productId}.json`;
+    // Fetch the product first to get the existing tags
+    const productUrl = `https://archanapopup.myshopify.com/admin/api/2023-01/products/${productId}.json`;
 
-    const headers = {
-      'Content-Type': 'application/json',
-      'X-Shopify-Access-Token': 'a8d0702d1a40bcff3405b9ba4c3ef42a'
-    };
+    const productResponse = await axios.get(productUrl, {
+      headers: {
+        'X-Shopify-Access-Token': 'a8d0702d1a40bcff3405b9ba4c3ef42a',
+        'Content-Type': 'application/json',
+      },
+    });
 
     const product = productResponse.data.product;
 
@@ -120,10 +122,10 @@ app.put('/products/:id/tag', async (req, res) => {
     };
 
     // Send the PUT request to update the product with new tags
-    const updateResponse = await axios.put(url, updatedProduct, {
+    const updateResponse = await axios.put(productUrl, updatedProduct, {
       headers: {
-      'Content-Type': 'application/json',
-      'X-Shopify-Access-Token': 'a8d0702d1a40bcff3405b9ba4c3ef42a'
+    'X-Shopify-Access-Token': 'a8d0702d1a40bcff3405b9ba4c3ef42a',
+        'Content-Type': 'application/json',
       },
     });
 
