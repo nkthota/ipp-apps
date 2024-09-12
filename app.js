@@ -83,6 +83,60 @@ app.put('/products/:productId/remove-tag', async (req, res) => {
   }
 });
 
+
+
+// PUT route to add a tag to a Shopify product
+app.put('/products/:id/tag', async (req, res) => {
+  const productId = req.params.id;
+  const { newTag } = req.body; // New tag to be added passed in request body
+
+  if (!newTag) {
+    return res.status(400).json({ error: 'New tag is required' });
+  }
+
+  try {
+    
+    const url = `https://archanapopup.myshopify.com/admin/api/2023-01/products/${productId}.json`;
+
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-Shopify-Access-Token': 'a8d0702d1a40bcff3405b9ba4c3ef42a'
+    };
+
+    const product = productResponse.data.product;
+
+    // Update the tags
+    let existingTags = product.tags ? product.tags.split(', ') : [];
+    if (!existingTags.includes(newTag)) {
+      existingTags.push(newTag);
+    }
+
+    // Prepare the updated product data
+    const updatedProduct = {
+      product: {
+        id: productId,
+        tags: existingTags.join(', '), // Shopify expects tags as a comma-separated string
+      },
+    };
+
+    // Send the PUT request to update the product with new tags
+    const updateResponse = await axios.put(productUrl, updatedProduct, {
+      headers: {
+      'Content-Type': 'application/json',
+      'X-Shopify-Access-Token': 'a8d0702d1a40bcff3405b9ba4c3ef42a'
+      },
+    });
+
+    res.status(200).json({
+      message: 'Tag added successfully',
+      updatedTags: updateResponse.data.product.tags,
+    });
+  } catch (error) {
+    console.error('Error adding tag to product:', error.response ? error.response.data : error.message);
+    res.status(500).json({ error: 'Failed to add tag to product' });
+  }
+});
+
 // PUT endpoint to update product status to 'draft'
 app.put('/products/:productId/draft', async (req, res) => {
   const productId = req.params.productId;
