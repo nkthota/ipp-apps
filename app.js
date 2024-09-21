@@ -219,6 +219,46 @@ app.put('/update-product-metafield/:productId', async (req, res) => {
   }
 });
 
+
+
+// PUT Method to add product to a collection
+app.put('/add-product-to-collection', async (req, res) => {
+  const { productId, collectionId } = req.body;
+
+  if (!productId || !collectionId) {
+    return res.status(400).json({ error: 'Product ID and Collection ID are required' });
+  }
+
+  try {
+    // Shopify API URL for Collects (linking product to collection)
+    const url = `https://archanapopup.myshopify.com/admin/api/2023-07/collects.json`;
+
+    // Data to be sent in the request body
+    const data = {
+      collect: {
+        product_id: productId,
+        collection_id: collectionId,
+      },
+    };
+
+    // POST request to Shopify Admin API
+    const response = await axios.post(url, data, {
+      headers: {
+        'X-Shopify-Access-Token': 'a8d0702d1a40bcff3405b9ba4c3ef42',
+        'Content-Type': 'application/json',
+      },
+    });
+
+    res.status(200).json({
+      message: 'Product added to collection successfully',
+      collect: response.data.collect,
+    });
+  } catch (error) {
+    console.error('Error adding product to collection:', error.response ? error.response.data : error.message);
+    res.status(500).json({ error: 'Failed to add product to collection' });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
