@@ -231,7 +231,7 @@ app.put('/add-product-to-collection', async (req, res) => {
 
   try {
     // Shopify API URL for Collects (linking product to collection)
-    const url = `https://archanapopup.myshopify.com/admin/api/2023-07/collects.json`;
+    const url = `https://archanapopup.myshopify.com/admin/api/2021-10/collects.json`;
 
     // Data to be sent in the request body
     const data = {
@@ -244,7 +244,7 @@ app.put('/add-product-to-collection', async (req, res) => {
     // POST request to Shopify Admin API
     const response = await axios.post(url, data, {
       headers: {
-        'X-Shopify-Access-Token': 'a8d0702d1a40bcff3405b9ba4c3ef42',
+        'X-Shopify-Access-Token': 'a8d0702d1a40bcff3405b9ba4c3ef42a',
         'Content-Type': 'application/json',
       },
     });
